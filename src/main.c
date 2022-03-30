@@ -4,7 +4,6 @@
 #include "stdio.h"
 #include "delay.h"
 
-<<<<<<< HEAD
 void delay_ms(uint16_t ms)
 {
     for (int16_t i = 0; i < ms; i++) {
@@ -14,11 +13,6 @@ void delay_ms(uint16_t ms)
         _delay_us(243);
     }
 }
-=======
-//#include "delay.h"
-//#include <stdio.h>
-//#include "uart1.h"
->>>>>>> bf33ca70ab71ae2296ce700cf925d2389afca487
 
 void init_enc(void);
 void process_enc(void);
