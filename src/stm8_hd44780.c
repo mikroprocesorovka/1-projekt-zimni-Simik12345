@@ -5,7 +5,7 @@
 while(Delay--);
 }*/
 
-// writes users own symbol into Character Graphic RAM of LCD dríver
+// writes users own symbol into Character Graphic RAM of LCD drï¿½ver
 // there are usualy 8 positions (characters 0 to 7), specified by "pos"
 // each character is defined by 8 bytes array (charmap)
 // bytes in array represents lines of symbol. First element in array is most top line
@@ -13,7 +13,7 @@ while(Delay--);
 void lcd_store_symbol(uint8_t pos, uint8_t* charmap){
 	uint8_t i;
 if(pos>7) return;
-lcd_command(LCD_SET_CGRAM | pos);
+lcd_command(LCD_SET_CGRAM | (pos*8));
 for(i=0;i<8;i++){
 lcd_data(charmap[i]);
 }
