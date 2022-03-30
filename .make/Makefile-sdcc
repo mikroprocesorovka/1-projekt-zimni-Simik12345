@@ -27,15 +27,31 @@ STLINK=stlinkv21
 
 F_CPU=16000000
 
-
+CP = cp
 MKDIR = mkdir
+
+ifeq ($(findstring 2019, $(shell openocd --version 2>&1)), 2019)
+    interface = interface/stlink.cfg
+else
+    interface = interface/stlink-dap.cfg
+endif
+ifeq ($(findstring 003, $(DEVICE)), 003)
+	target = target/stm8s003.cfg
+else ifeq ($(findstring 103, $(DEVICE)), 103)
+	target = target/stm8s103.cfg
+else ifeq ($(findstring 105, $(DEVICE)), 105)
+	target = target/stm8s105.cfg
+else
+	target = target/stm8s.cfg
+endif
+OPENOCD = openocd -f .make/stm8s-flash.cfg -f $(interface) -f $(target)
+
 ifeq ($(OS),Windows_NT)
     uname_S := Windows
 
 	CC_ROOT = "/c/Program Files/SDCC"
 	CC = $(CC_ROOT)/bin/sdcc
 	LN = cp
-	OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink.cfg -f target/stm8s.cfg
 	PYTHON = python
 else
     uname_S := $(shell uname -s)
@@ -43,10 +59,8 @@ else
 	CC_ROOT = /usr/
 	CC = $(CC_ROOT)/bin/sdcc
 	LN = ln -sf
-	OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink-dap.cfg -f target/stm8s.cfg
 	PYTHON = python3
 endif
-CP = cp
 
 # trap handling requires SDCC >=v3.4.3
 SKIP_TRAPS = 1

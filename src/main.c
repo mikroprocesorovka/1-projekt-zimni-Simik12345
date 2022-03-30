@@ -4,6 +4,7 @@
 #include "stdio.h"
 #include "delay.h"
 
+<<<<<<< HEAD
 void delay_ms(uint16_t ms)
 {
     for (int16_t i = 0; i < ms; i++) {
@@ -13,6 +14,11 @@ void delay_ms(uint16_t ms)
         _delay_us(243);
     }
 }
+=======
+//#include "delay.h"
+//#include <stdio.h>
+//#include "uart1.h"
+>>>>>>> bf33ca70ab71ae2296ce700cf925d2389afca487
 
 void init_enc(void);
 void process_enc(void);
@@ -157,6 +163,7 @@ save_updown=updown;
 init_timer();	// spustí tim3 s poerušením každé 2ms
 enableInterrupts(); // není nutné, protože tuto funkci voláme v init_milis()
 
+<<<<<<< HEAD
 lcd_clear();	//reset displeje
 print_cursor();	//nastavit kurzor
 
@@ -176,6 +183,10 @@ print_button();		//funkční proměnné tlačítka
 		test(colors,sizeof(colors)); 	// transfer image into RGB LED string
   		delay_ms(5);  
 	}
+=======
+    init_milis();
+    //init_uart1();
+>>>>>>> bf33ca70ab71ae2296ce700cf925d2389afca487
 }
  INTERRUPT_HANDLER(TIM3_UPD_OVF_BRK_IRQHandler, 15)	//interrupt pro vstupy na ekodéru
  {
@@ -236,6 +247,7 @@ SPI->CR1 |= SPI_CR1_SPE | SPI_CR1_MSTR; // Enable SPI as master at maximum speed
 }
 
 
+<<<<<<< HEAD
 void init_timer(void){	//zapnout interrupt
 TIM3_TimeBaseInit(TIM3_PRESCALER_16,1999);
 TIM3_ITConfig(TIM3_IT_UPDATE, ENABLE);
@@ -409,6 +421,18 @@ void print_cursor(void){	//vytvořit nový kurzor pro posun
 		//lcd_puts("T");
 		lcd_putchar(4);
 	}
+=======
+        if (milis() - time > 333 && !BTN_PUSH) {
+            LED_REVERSE; 
+            time = milis();
+            //printf("%ld\n", time);
+        }
+
+        //LED_REVERSE; 
+        //delay_ms(333);
+        //printf("Funguje to!!!\n");
+    }
+>>>>>>> bf33ca70ab71ae2296ce700cf925d2389afca487
 }
 void print_button(void){	//přepsat funkční tlačítka, která se mehou měnit
 	if(pause==0){	//pause/unpsause tlačítko
