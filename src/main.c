@@ -4,15 +4,6 @@
 #include "stdio.h"
 #include "delay.h"
 
-void delay_ms(uint16_t ms)
-{
-    for (int16_t i = 0; i < ms; i++) {
-        _delay_us(250);
-        _delay_us(250);
-        _delay_us(250);
-        _delay_us(243);
-    }
-}
 
 void init_enc(void);
 void process_enc(void);
@@ -29,28 +20,24 @@ void init_spi(void);
 void test(uint8_t* data, uint16_t delka);
 void led_posun(uint8_t* data, uint16_t delka);
 
+#define pocet_LED 24 
+
+
 // test pattern for (8 RGB LED ring)
-uint8_t colors[48]={
+uint8_t colors[pocet_LED*2]={
 0x10,0x00,0x00, // B
 0x00,0x10,0x00, // R
 0x00,0x00,0x10, // G
-0x00,0x00,0x00, // black
 0x10,0x20,0x00, //
-0x10,0x20,0x00, //
-0x10,0x20,0x00, //
-0x10,0x20,0x00, //
-0x10,0x00,0x00, // B
-0x00,0x10,0x00, // R
-0x00,0x00,0x10, // G
-0x00,0x00,0x00, // black
 0x10,0x20,0x00, //
 0x10,0x20,0x00, //
 0x10,0x20,0x00, //
 0x10,0x20,0x00, //
 };
 uint8_t* colors2;
-uint8_t posun_posledne=0;
-#define rychlost 500;
+uint32_t posun_posledne=0;
+#define rychlost 150
+uint32_t posun = 0;
 //colors2 = colors + 3;
 #define L_PATTERN 0b01110000 // 3x125ns (8MHZ SPI)
 #define H_PATTERN 0b01111100 // 5x125ns (8MHZ SPI), first and last bit must be zero (to remain MOSI in Low between frames/bits)
@@ -79,64 +66,64 @@ uint16_t save_cifra2=0;
 uint16_t save_updown=0;
 
 const uint8_t symbol1[8]={	//symbol
-0b00000,
-0b11000,
-0b11110,
-0b11111,
-0b11110,
-0b11000,
-0b00000,
-0b00000
+	0b00000,
+	0b11000,
+	0b11110,
+	0b11111,
+	0b11110,
+	0b11000,
+	0b00000,
+	0b00000
 };
 const uint8_t symbol2[8]={	//symbol
-0b00000,
-0b01010,
-0b01010,
-0b01010,
-0b01010,
-0b01010,
-0b00000,
-0b00000
+	0b00000,
+	0b01010,
+	0b01010,
+	0b01010,
+	0b01010,
+	0b01010,
+	0b00000,
+	0b00000
 };
 const uint8_t symbol3[8]={	//symbol
-0b00100,
-0b01110,
-0b10101,
-0b00100,
-0b00100,
-0b00100,
-0b00100,
-0b00000,
+	0b00100,
+	0b01110,
+	0b10101,
+	0b00100,
+	0b00100,
+	0b00100,
+	0b00100,
+	0b00000,
 };
 const uint8_t symbol4[8]={	//symbol
-0b00100,
-0b00100,
-0b00100,
-0b00100,
-0b10101,
-0b01110,
-0b00100,
-0b00000,
+	0b00100,
+	0b00100,
+	0b00100,
+	0b00100,
+	0b10101,
+	0b01110,
+	0b00100,
+	0b00000,
 };
 const uint8_t symbol5[8]={	//symbol
-0b11111,
-0b00000,
-0b00000,
-0b00000,
-0b00000,
-0b00000,
-0b00000,
-0b00000,
+	0b11111,
+	0b00000,
+	0b00000,
+	0b00000,
+	0b00000,
+	0b00000,
+	0b00000,
+	0b00000,
 };
 const uint8_t symbol6[8]={	//symbol
-0b00000,
-0b01110,
-0b00001,
-0b01101,
-0b10001,
-0b01110,
-0b00000,
-0b00000,
+	0b00000,
+	0b01110,
+	0b00001,
+	0b01101,
+	0b10001,
+	0b01110,
+	0b00000,
+	0b00000,
 };
 
 void main(void){
@@ -157,7 +144,6 @@ save_updown=updown;
 init_timer();	// spustí tim3 s poerušením každé 2ms
 enableInterrupts(); // není nutné, protože tuto funkci voláme v init_milis()
 
-<<<<<<< HEAD
 lcd_clear();	//reset displeje
 print_cursor();	//nastavit kurzor
 
@@ -169,19 +155,26 @@ lcd_gotoxy(button2_position,0);
 lcd_putchar(5);
 print_button();		//funkční proměnné tlačítka
 
-  while (1){
+	while (1){
 		if(update_display==1){
 			display_time();	//přepsat cifry
 			update_display=0;
 		}
-		test(colors,sizeof(colors)); 	// transfer image into RGB LED string
-  		delay_ms(5);  
+		if((milis()-posun_posledne)>rychlost){
+			for(uint8_t i=0;i<(pocet_LED);i++){
+				colors[i+pocet_LED]=(colors[i]);
+			}
+			posun++;
+			if(posun>=(pocet_LED/3)){
+				posun = 0;
+			}
+			colors2 = (colors)+(3*posun);
+			test(colors2,sizeof(colors)/2); 	// transfer image into RGB LED string
+			posun_posledne=milis();
+		}
 	}
-=======
-    init_milis();
-    //init_uart1();
->>>>>>> bf33ca70ab71ae2296ce700cf925d2389afca487
 }
+
  INTERRUPT_HANDLER(TIM3_UPD_OVF_BRK_IRQHandler, 15)	//interrupt pro vstupy na ekodéru
  {
 	 TIM3_ClearITPendingBit(TIM3_IT_UPDATE);
@@ -241,7 +234,6 @@ SPI->CR1 |= SPI_CR1_SPE | SPI_CR1_MSTR; // Enable SPI as master at maximum speed
 }
 
 
-<<<<<<< HEAD
 void init_timer(void){	//zapnout interrupt
 TIM3_TimeBaseInit(TIM3_PRESCALER_16,1999);
 TIM3_ITConfig(TIM3_IT_UPDATE, ENABLE);
@@ -415,18 +407,6 @@ void print_cursor(void){	//vytvořit nový kurzor pro posun
 		//lcd_puts("T");
 		lcd_putchar(4);
 	}
-=======
-        if (milis() - time > 333 && !BTN_PUSH) {
-            LED_REVERSE; 
-            time = milis();
-            //printf("%ld\n", time);
-        }
-
-        //LED_REVERSE; 
-        //delay_ms(333);
-        //printf("Funguje to!!!\n");
-    }
->>>>>>> bf33ca70ab71ae2296ce700cf925d2389afca487
 }
 void print_button(void){	//přepsat funkční tlačítka, která se mehou měnit
 	if(pause==0){	//pause/unpsause tlačítko

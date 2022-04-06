@@ -51,7 +51,6 @@ CP = cp
 # trap handling requires SDCC >=v3.4.3
 SKIP_TRAPS = 1
 
-<<<<<<< HEAD
 # set compiler path & parameters 
 CFLAGS  = -mstm8 -lstm8 --opt-code-size 
 CFLAGS  = -mstm8 -lstm8 --opt-code-size --std-sdcc99 --nogcse --all-callee-saves --stack-auto --fverbose-asm --float-reent --no-peep
@@ -122,22 +121,6 @@ $(TARGET).ihx: $(PRJ_OBJECTS) $(SPL_OBJECTS)
 	@echo
 	@$(PYTHON) .make/sizecal.py ./out.ihx
 	@echo
-=======
-menu::
-	@echo "# Vyber si toolchain!"
-	@echo "# Detaily v REAME a na adrese "
-	@echo "# https://chytrosti.marrek.cz/vyvoj-stm8-s-opensource-nastroji.html"
-	@echo
-	@echo "# Pokud chces debug a nevadi ti vetsi binarka:"
-	@echo \"make sdcc\" "     ... nebo"
-	@echo \"make default\"
-	@echo
-	@echo "# Pokud chces male binarky a nepotrebujes debug:"
-	@echo \"make sdccrm\"
-	@echo
-	@echo "# Pokud chces male binarky i debug a mas 'SDCC-gas' zavolej:"
-	@echo \"make sdcc-gas\"
->>>>>>> bf33ca70ab71ae2296ce700cf925d2389afca487
 
 $(OUTPUT_DIR)/%.rel: %.c $(PRJ_INCS) Makefile | $(OUTPUT_DIR)
 	$(CC) $(CFLAGS) $(FMT_ELF) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $< -o $@
